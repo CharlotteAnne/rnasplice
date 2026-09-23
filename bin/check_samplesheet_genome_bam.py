@@ -66,7 +66,14 @@ class RowChecker:
         self._validate_genome_bam(row)
         self._validate_condition(row)
         self._validate_library(row)
-        self._seen.add((row[self._sample_col], row[self._genome_bam_col]))
+        key = (row[self._sample_col], row[self._genome_bam_col])
+        if key in self._seen:
+            # Flow writes one samplesheet row per raw-read fileset of a sample, so a
+            # sample sequenced in two runs arrives twice with the same BAM. It is one
+            # input, so keep it once rather than fail or count the BAM twice.
+            logger.warning(f"Dropping duplicate row for sample {key[0]} (same BAM).")
+            return
+        self._seen.add(key)
         self.modified.append(row)
 
     def _validate_library(self, row):

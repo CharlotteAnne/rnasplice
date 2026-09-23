@@ -3,6 +3,13 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v1.0.4-flow.4 (Goodwright fork for Flow)
+
+- `--source genome_bam`: rows repeating the same sample and BAM are kept once, with a
+  warning. Flow writes one samplesheet row per raw-read fileset, so a sample sequenced
+  in two runs arrived twice and failed the uniqueness check. A sample name paired with
+  two different BAMs still fails.
+
 ## v1.0.4-flow.3 (Goodwright fork for Flow)
 
 - On Flow, only rMATS runs by default. rnasplice's own defaults switch on DEXSeq,
