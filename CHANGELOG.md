@@ -3,6 +3,13 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v1.0.4-flow.3 (Goodwright fork for Flow)
+
+- On Flow, only rMATS runs by default. rnasplice's own defaults switch on DEXSeq,
+  edgeR, DEXSeq DTU, SUPPA and MISO sashimi plots; the schema now sets DEXSeq and
+  edgeR off (optional toggles) and pins DEXSeq DTU, SUPPA and sashimi plots off.
+  Before, sashimi plots ran from BAM input, for two fixed human genes.
+
 ## v1.0.4-flow.2 (Goodwright fork for Flow)
 
 - The Flow schema takes the genome FASTA, GTF and transcripts FASTA from a Prepare

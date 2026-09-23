@@ -205,6 +205,20 @@
                     "default": "false",
                     "required": true,
                     "description": "SUPPA needs Salmon quantification, which BAM input does not provide."
+                },
+                "dexseq_dtu": {
+                    "name": "Run DEXSeq DTU",
+                    "type": "hidden",
+                    "default": "false",
+                    "required": true,
+                    "description": "Differential transcript usage needs Salmon quantification, which BAM input does not provide."
+                },
+                "sashimi_plot": {
+                    "name": "Sashimi plots (MISO)",
+                    "type": "hidden",
+                    "default": "false",
+                    "required": true,
+                    "description": "Off on Flow: rnasplice turns it on by default and plots two fixed human genes."
                 }
             }
         },
