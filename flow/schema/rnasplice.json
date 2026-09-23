@@ -72,7 +72,7 @@
         },
         {
             "name": "Genome options",
-            "description": "Use the same genome and annotation as the RNA-Seq execution that produced the BAMs.",
+            "description": "Choose the Prepare RNA-Seq Genome execution that the BAMs' RNA-Seq execution used. rnasplice builds no genome index from BAM input, so it needs no genome preparation pipeline of its own.",
             "advanced": false,
             "from_execution": true,
             "params": {
@@ -97,6 +97,17 @@
                         "pattern": "^\\S+\\.gtf(\\.gz)?$"
                     },
                     "description": "Gene annotation GTF."
+                },
+                "transcript_fasta": {
+                    "name": "Transcripts FASTA",
+                    "type": "data",
+                    "pattern": "fasta|fa$",
+                    "required": true,
+                    "execution_output": {
+                        "process": "MAKE_TRANSCRIPTS_FASTA",
+                        "pattern": "fasta|fa$"
+                    },
+                    "description": "Transcript sequences from the Prepare RNA-Seq Genome execution. Supplying it stops rnasplice rebuilding it with RSEM on every run."
                 },
                 "gtf_extra_attributes": {
                     "name": "GTF Extra Attributes",

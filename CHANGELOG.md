@@ -3,6 +3,12 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v1.0.4-flow.2 (Goodwright fork for Flow)
+
+- The Flow schema takes the genome FASTA, GTF and transcripts FASTA from a Prepare
+  RNA-Seq Genome execution, so no genome files are rebuilt per run. From BAM input,
+  rnasplice builds no indexes; the transcripts FASTA was the one costly step left.
+
 ## v1.0.4-flow.1 (Goodwright fork for Flow)
 
 Based on v1.0.4.
