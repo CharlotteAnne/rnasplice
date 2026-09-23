@@ -77,9 +77,13 @@ def create_fastq_channel(LinkedHashMap row) {
 def create_genome_bam_channel(LinkedHashMap row) {
     // create meta map
     def meta = [:]
-    meta.id         = row.sample
-    meta.genome_bam = row.genome_bam
-    meta.condition  = row.condition
+    meta.id           = row.sample
+    meta.genome_bam   = row.genome_bam
+    meta.condition    = row.condition
+    // Optional columns (backported from nf-core/rnasplice#263): without them rMATS
+    // runs every BAM as unstranded paired-end, whatever the library really is.
+    meta.single_end   = row.single_end ? row.single_end.toBoolean() : false
+    meta.strandedness = row.strandedness ?: 'unstranded'
 
     // add path(s) of the bam file(s) to the meta map
     def genome_bam_meta = []

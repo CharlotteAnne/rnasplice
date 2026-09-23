@@ -1,0 +1,247 @@
+{
+    "inputs": [
+        {
+            "name": "Sample options",
+            "description": "The samples to compare, each with the genome BAM an RNA-Seq execution produced for it.",
+            "advanced": false,
+            "params": {
+                "input": {
+                    "name": "Samples",
+                    "description": "One row per sample. Choose each sample's genome BAM from its RNA-Seq execution (the STAR 'markdup.sorted.bam'), and give it a condition that matches the contrasts file.",
+                    "required": true,
+                    "type": "csv",
+                    "takes_samples": true,
+                    "sample_types": ["RNA-Seq"],
+                    "columns": [
+                        {
+                            "name": "sample",
+                            "type": "string",
+                            "from_sample": "name",
+                            "required": true,
+                            "render": false
+                        },
+                        {
+                            "name": "condition",
+                            "type": "string",
+                            "required": true,
+                            "render": true,
+                            "description": "Group this sample belongs to, as named in the contrasts file. Letters, numbers, dots and underscores; must start with a letter."
+                        },
+                        {
+                            "name": "strandedness",
+                            "type": "string",
+                            "from_sample": "strandedness",
+                            "required": true,
+                            "render": true,
+                            "valid": ["unstranded", "forward", "reverse"],
+                            "description": "Library strandedness. rMATS needs the real value; 'auto' is not accepted here."
+                        },
+                        {
+                            "name": "single_end",
+                            "type": "string",
+                            "required": true,
+                            "render": true,
+                            "valid": ["false", "true"],
+                            "description": "true for single-end libraries, false for paired-end."
+                        },
+                        {
+                            "name": "genome_bam",
+                            "type": "data",
+                            "required": true,
+                            "render": true,
+                            "pattern": "\\.bam$",
+                            "description": "Genome-aligned BAM from a splice-aware aligner (STAR), from the same genome and annotation as below."
+                        }
+                    ]
+                },
+                "contrasts": {
+                    "name": "Contrasts",
+                    "type": "data",
+                    "required": true,
+                    "pattern": "\\.csv$",
+                    "description": "CSV with columns contrast,treatment,control, one row per comparison. treatment and control are condition names from the samples table, e.g. 'KD-CTRL,KD,CTRL'."
+                },
+                "source": {
+                    "name": "Source",
+                    "type": "hidden",
+                    "default": "genome_bam",
+                    "required": true,
+                    "description": "Flow runs rnasplice from BAMs produced by the RNA-Seq pipeline."
+                }
+            }
+        },
+        {
+            "name": "Genome options",
+            "description": "Use the same genome and annotation as the RNA-Seq execution that produced the BAMs.",
+            "advanced": false,
+            "from_execution": true,
+            "params": {
+                "fasta": {
+                    "name": "FASTA",
+                    "type": "data",
+                    "pattern": "^\\S+\\.fn?a(sta)?(\\.gz)?$",
+                    "required": true,
+                    "execution_output": {
+                        "process": null,
+                        "pattern": "^\\S+\\.fn?a(sta)?(\\.gz)?$"
+                    },
+                    "description": "Genome FASTA."
+                },
+                "gtf": {
+                    "name": "GTF",
+                    "type": "data",
+                    "pattern": "^\\S+\\.gtf(\\.gz)?$",
+                    "required": true,
+                    "execution_output": {
+                        "process": null,
+                        "pattern": "^\\S+\\.gtf(\\.gz)?$"
+                    },
+                    "description": "Gene annotation GTF."
+                },
+                "gtf_extra_attributes": {
+                    "name": "GTF Extra Attributes",
+                    "type": "string",
+                    "required": false,
+                    "default": "gene_name",
+                    "description": "GTF attribute used for additional gene identifiers."
+                },
+                "gtf_group_features": {
+                    "name": "GTF Group Features",
+                    "type": "string",
+                    "required": false,
+                    "default": "gene_id",
+                    "description": "GTF attribute used to group features."
+                }
+            }
+        },
+        {
+            "name": "rMATS options",
+            "description": "Differential splicing events with rMATS.",
+            "advanced": false,
+            "params": {
+                "rmats": {
+                    "name": "Run rMATS",
+                    "type": "hidden",
+                    "default": "true",
+                    "required": true,
+                    "description": "rMATS is the reason this pipeline is on Flow, so it always runs."
+                },
+                "rmats_read_len": {
+                    "name": "Read length",
+                    "type": "number",
+                    "required": true,
+                    "description": "Length of each read in the BAMs. rMATS needs the real value; there is no safe default."
+                },
+                "rmats_paired_stats": {
+                    "name": "Paired statistics",
+                    "type": "boolean",
+                    "required": false,
+                    "default": false,
+                    "description": "Only for paired designs, where each treatment replicate has a matched control. Leave off for independent groups."
+                },
+                "rmats_splice_diff_cutoff": {
+                    "name": "Splicing difference cutoff",
+                    "type": "number",
+                    "required": false,
+                    "default": 0.0001,
+                    "description": "Cutoff used in rMATS's null hypothesis test for differential splicing."
+                },
+                "rmats_novel_splice_site": {
+                    "name": "Detect novel splice sites",
+                    "type": "boolean",
+                    "required": false,
+                    "default": false,
+                    "description": "Also detect events that use unannotated splice sites."
+                },
+                "rmats_min_intron_len": {
+                    "name": "Minimum intron length",
+                    "type": "number",
+                    "required": false,
+                    "default": 50,
+                    "description": "Minimum intron length, used with novel splice site detection."
+                },
+                "rmats_max_exon_len": {
+                    "name": "Maximum exon length",
+                    "type": "number",
+                    "required": false,
+                    "default": 500,
+                    "description": "Maximum exon length, used with novel splice site detection."
+                }
+            }
+        },
+        {
+            "name": "Other splicing methods",
+            "description": "Exon-level methods that also run from genome BAMs.",
+            "advanced": true,
+            "params": {
+                "dexseq_exon": {
+                    "name": "Run DEXSeq (differential exon usage)",
+                    "type": "boolean",
+                    "required": false,
+                    "default": false,
+                    "description": "Differential exon usage with DEXSeq."
+                },
+                "edger_exon": {
+                    "name": "Run edgeR (differential exon usage)",
+                    "type": "boolean",
+                    "required": false,
+                    "default": false,
+                    "description": "Differential exon usage with edgeR."
+                },
+                "suppa": {
+                    "name": "Run SUPPA",
+                    "type": "hidden",
+                    "default": "false",
+                    "required": true,
+                    "description": "SUPPA needs Salmon quantification, which BAM input does not provide."
+                }
+            }
+        },
+        {
+            "name": "General pipeline options",
+            "description": "",
+            "advanced": true,
+            "params": {
+                "skip_bigwig": {
+                    "name": "Skip bigwig",
+                    "type": "boolean",
+                    "required": false,
+                    "default": true,
+                    "description": "Skip coverage bigWig creation."
+                },
+                "multiqc_title": {
+                    "name": "MultiQC Report Title",
+                    "type": "string",
+                    "required": false,
+                    "description": "Title printed at the top of the MultiQC report."
+                }
+            }
+        }
+    ],
+    "outputs": [
+        {
+            "name": "rMATS results",
+            "description": "rMATS differential splicing events per contrast (*.MATS.JC.txt and *.MATS.JCEC.txt for SE, A5SS, A3SS, MXE and RI), plus summary.txt.",
+            "filetype": "txt",
+            "process": "RMATS_POST"
+        },
+        {
+            "name": "DEXSeq results",
+            "description": "DEXSeq differential exon usage results, when enabled.",
+            "filetype": "csv",
+            "process": "DEXSEQ_EXON"
+        },
+        {
+            "name": "edgeR results",
+            "description": "edgeR differential exon usage results, when enabled.",
+            "filetype": "csv",
+            "process": "EDGER_EXON"
+        },
+        {
+            "name": "MultiQC report",
+            "description": "QC report for the BAMs (samtools stats).",
+            "filetype": "html",
+            "process": "MULTIQC"
+        }
+    ]
+}

@@ -65,8 +65,24 @@ class RowChecker:
         self._validate_sample(row)
         self._validate_genome_bam(row)
         self._validate_condition(row)
+        self._validate_library(row)
         self._seen.add((row[self._sample_col], row[self._genome_bam_col]))
         self.modified.append(row)
+
+    def _validate_library(self, row):
+        """Check the optional strandedness and single_end columns, when given."""
+        strandedness = row.get("strandedness")
+        if strandedness:
+            valid = ("unstranded", "forward", "reverse")
+            assert strandedness in valid, (
+                f"The strandedness column has an unrecognized value: {strandedness}\n"
+                f"It should be one of: {', '.join(valid)}"
+            )
+        single_end = row.get("single_end")
+        if single_end:
+            assert single_end.lower() in ("true", "false"), (
+                f"The single_end column must be true or false, not: {single_end}"
+            )
 
     def _validate_sample(self, row):
         """Assert that the sample name exists and convert spaces to underscores."""

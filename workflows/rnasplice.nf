@@ -224,7 +224,7 @@ workflow RNASPLICE {
 
 
     // Check rMATS parameters specified correctly
-    if (params.rmats && params.source == 'fastq') {
+    if (params.rmats && (params.source == 'fastq' || params.source == 'genome_bam')) {
             WorkflowRnasplice.rmatsReadError(INPUT_CHECK.out.reads, log)
             WorkflowRnasplice.rmatsStrandednessError(INPUT_CHECK.out.reads, log)
     }

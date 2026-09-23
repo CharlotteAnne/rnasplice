@@ -3,6 +3,19 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v1.0.4-flow.1 (Goodwright fork for Flow)
+
+Based on v1.0.4.
+
+- Added `flow/schema/rnasplice.json` so the pipeline runs on Flow from the genome BAMs of
+  RNA-Seq executions (`--source genome_bam`), with rMATS always on.
+- `--source genome_bam` samplesheets accept optional `strandedness` and `single_end`
+  columns, and rMATS uses them. Without them, rMATS ran every BAM as unstranded
+  paired-end. Backported from nf-core/rnasplice#263, which is fixed on `dev` but
+  unreleased.
+- The rMATS checks that all samples share read type and strandedness now also run for
+  `--source genome_bam`.
+
 ## v1.0.4 - 2024-04-21
 
 - Fixed incorrect assignment of cluster groups (Issue #131).
